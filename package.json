@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "name": "d2m-pipeline",
+  "main":  "src/action.ts",
+  "scripts": {
+    "tscheck": "tsc --noEmit",
+    "pack": "ncc build --out lib",
+    "compile": "pnpm run tscheck && pnpm run pack"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^22.7.6",
+    "@vercel/ncc": "^0.38.2",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.0"
+  }
+}
