@@ -1,10 +1,48 @@
 name: 'd2m-pipeline'
 description: 'A GitHub Action to trigger deployment pipeline on machine running self hosted d2m instance'
 inputs:
-  message:
-    description: 'The message to log'
-    default: 'Hello World'
+  machineHost:
+    description: 'Publicly accessible IP or Host address of the machine running self hosted d2m instance'
     required: true
+  machinePort:
+    description: 'Port of the machine running self hosted d2m instance'
+    required: false
+    default: '80'
+  publicKey:
+    description: 'Public key to securely connect to the machine via RESTful API'
+    required: true
+  preDeployCommands:
+    description: 'Commands to run before deployment'
+    required: false
+    default: '[]'
+  postDeployCommands:
+    description: 'Commands to run after deployment'
+    required: false
+    default: '[]'
+  failOnError:
+    description: 'Deployment will fail if any of the (pre/post deployment) command fails'
+    required: false
+    default: 'true'
+  strategy:
+    description: 'Deployment strategy'
+    required: false
+    default: 'empty'
+  localUser:
+    description: 'Local user to run the whole deployment against'
+    required: true
+    default: 'root'
+  localParentPath:
+    description: 'Path relative to the local user home directory, where the app should be deployed'
+    required: true
+    default: 'd2m-deployments'
+  repoAutoSetupDeps:
+    description: 'Automatically install dependencies based on project type'
+    required: false
+    default: 'false'
+  repoBranch:
+    description: 'Branch to pull data from for the deployment'
+    required: false
+    default: 'main'
 runs:
   using: 'node20'
   main: 'lib/index.js'
