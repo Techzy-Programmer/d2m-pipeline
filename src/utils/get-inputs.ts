@@ -1,21 +1,22 @@
 import * as core from '@actions/core';
-import { Strategy, WFInput } from "../types";
+import { CoreInput, Strategy, WFInput } from "../types";
 
-export function getInputs(): WFInput {
-  return {
-    ...getStrategy(),
-    local_user: core.getInput("localUser"),
-    fail_on_error: core.getBooleanInput("failOnError"),
-    local_parent_path: core.getInput("localParentPath"),
-    post_deploy_cmds: parseCommand("postDeployCommands"),
-    pre_deploy_cmds: parseCommand("preDeployCommands"),
-
-    core: {
+export function getInputs(): [WFInput, CoreInput] {
+  return [
+    {
+      ...getStrategy(),
+      local_user: core.getInput("localUser"),
+      fail_on_error: core.getBooleanInput("failOnError"),
+      local_parent_path: core.getInput("localParentPath"),
+      post_deploy_cmds: parseCommand("postDeployCommands"),
+      pre_deploy_cmds: parseCommand("preDeployCommands"),
+    },
+    {
       key: core.getMultilineInput("publicKey").join("\n"),
       host: core.getInput("machineHost"),
       port: core.getInput("machinePort"),
-    }
-  };
+    },
+  ];
 }
 
 function parseCommand(key: string): string[] {
@@ -41,24 +42,33 @@ function parseCommand(key: string): string[] {
 
 function getStrategy(): Strategy {
   let strategy_type = core.getInput("strategy");
-  if (!["empty", "repo", "docker"].includes(strategy_type)) {
+  if (!["repo", "dist", "docker"].includes(strategy_type)) {
     strategy_type = "empty";
   }
 
-  if (strategy_type === "repo") {
-    return {
-      strategy_type,
-      strategy: {
-        auto_setup_deps: core.getBooleanInput("autoSetupDeps"),
-        branch: core.getInput("branch"),
-      },
-    };
-  }
-  else if (strategy_type === "docker") {
-    return {
-      strategy_type,
-      strategy: {},
-    };
+  switch (strategy_type) {
+    case "repo":
+      return {
+        strategy_type,
+        strategy: {
+          auto_setup_deps: core.getBooleanInput("autoSetupDeps"),
+          branch: core.getInput("branch"),
+        },
+      };
+
+    case "dist":
+      return {
+        strategy_type,
+        strategy: {
+          file_name: '', // To be set after calling upload api
+        },
+      };
+      
+    case "docker":
+      return {
+        strategy_type,
+        strategy: {},
+      };
   }
 
   return {

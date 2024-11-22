@@ -3,12 +3,19 @@ type RepoStrategy = {
   branch: string;
 }
 
+type DistStrategy = {
+  file_name: string;
+}
+
 type DockerStrategy = {
 }
 
 export type Strategy = ({
   strategy: RepoStrategy;
   strategy_type: "repo";
+} | {
+  strategy: DistStrategy;
+  strategy_type: "dist";
 } | {
   strategy: DockerStrategy;
   strategy_type: "docker";
@@ -22,9 +29,10 @@ export type WFInput = ({
   local_parent_path: string;
   fail_on_error: boolean;
   local_user: string;
-  core: {
-    host: string;
-    port: string;
-    key: string;
-  }
 }) & Strategy;
+
+export type CoreInput = {
+  key: string;
+  host: string;
+  port: string;
+}

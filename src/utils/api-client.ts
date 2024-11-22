@@ -1,5 +1,7 @@
 import * as crypto from 'crypto';
 
+type ReqData = Record<string, any> | Blob | File | ArrayBuffer;
+
 export class APIClient {
   private publicKey: string;
   baseUrl: string;
@@ -51,30 +53,47 @@ export class APIClient {
   }
 
   /**
-   * Encrypts and sends data to the specified endpoint.
+   * Encrypts and sends data or a file to the specified endpoint.
    * @param endpoint API endpoint.
-   * @param data JSON data to send.
+   * @param data JSON data or File to send.
    * @param options Additional fetch options.
    * @returns Promise resolving with the fetch Response.
    */
-  async sendEncrypted(endpoint: string, data: Record<string, any>, options: RequestInit = {}): Promise<Response> {
+  async sendEncrypted(endpoint: string, data: ReqData, options: RequestInit = {}): Promise<Response> {
     try {
+      let contentType = 'application/octet-stream';
+      let method = "PUT";
+
+      const isCooked = data instanceof Blob || data instanceof File;
+      const isRawBuff = data instanceof ArrayBuffer || data instanceof Buffer;
+
+      const dataBuffer = isRawBuff ?
+        Buffer.from(data)
+        : isCooked ?
+          Buffer.from(await data.arrayBuffer())
+          : (
+              method = "POST",
+              contentType = 'text/plain',
+              Buffer.from(JSON.stringify(data))
+            );
+
       const aesKey = this.generateAESKey();
-      const jsonData = Buffer.from(JSON.stringify(data));
       const encryptedKey = this.encryptAESKeyWithRSA(aesKey);
-      const encryptedData = this.encryptWithAES(jsonData, aesKey);
+      const encryptedData = this.encryptWithAES(dataBuffer, aesKey);
 
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        headers: {
-          'Content-Type': 'text/plain',
-          'X-Encryption-Key': encryptedKey,
-          ...options.headers,
-        },
-
+      const fetchOptions: RequestInit = {
         body: encryptedData,
-        method: 'POST',
         ...options,
-      });
+        method,
+
+        headers: {
+          'X-Encryption-Key': encryptedKey,
+          'Content-Type': contentType,
+          ...(options.headers || {}),
+        },
+      };
+
+      const response = await fetch(`${this.baseUrl}${endpoint}`, fetchOptions);
 
       return response;
     } catch (error) {
