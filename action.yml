@@ -27,6 +27,10 @@ inputs:
     description: 'Deployment strategy'
     required: false
     default: 'empty'
+  distStrategyFolder:
+    description: 'Folder to deploy for dist strategy'
+    required: false
+    default: '.'
   localUser:
     description: 'Local user to run the whole deployment against'
     required: true

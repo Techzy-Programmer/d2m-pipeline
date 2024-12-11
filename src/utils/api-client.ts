@@ -3,12 +3,12 @@ import * as crypto from 'crypto';
 type ReqData = Record<string, any> | Blob | File | ArrayBuffer;
 
 export class APIClient {
-  private publicKey: string;
-  baseUrl: string;
+  private static baseUrl: string;
+  private static publicKey: string;
 
-  constructor(publicKey: string, baseUrl: string) {
-    this.publicKey = publicKey;
-    this.baseUrl = baseUrl;
+  static setConfig(publicKey: string, baseUrl: string) {
+    APIClient.publicKey = publicKey;
+    APIClient.baseUrl = baseUrl;
   }
 
   /**
@@ -43,7 +43,7 @@ export class APIClient {
   private encryptAESKeyWithRSA(aesKey: Buffer): string {
     const encrypted = crypto.publicEncrypt(
       {
-        key: this.publicKey,
+        key: APIClient.publicKey,
         padding: crypto.constants.RSA_PKCS1_PADDING,
       },
       aesKey
@@ -93,7 +93,7 @@ export class APIClient {
         },
       };
 
-      const response = await fetch(`${this.baseUrl}${endpoint}`, fetchOptions);
+      const response = await fetch(`${APIClient.baseUrl}${endpoint}`, fetchOptions);
 
       return response;
     } catch (error) {

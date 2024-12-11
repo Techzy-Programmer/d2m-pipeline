@@ -1,0 +1,26 @@
+# Test action setup to simulate GitHub actions workflow locally using `act` tool
+
+name: CD-Pipeline
+
+on:
+  push:
+    branches:
+      - do-not-run
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo Code
+        uses: actions/checkout@v4
+
+      - name: Deploy To D2M
+        uses: ./
+        with:
+          machineHost: "host.docker.internal"
+          publicKey: ${{ secrets.PUBLIC_KEY }}
+          localUser: "risha"
+          localParentPath: "Documents/d2m-test"
+          strategy: "dist"
+          distStrategyFolder: "./src"

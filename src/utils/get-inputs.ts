@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import { CoreInput, Strategy, WFInput } from "../types";
+import { panic } from './general';
 
 export function getInputs(): [WFInput, CoreInput] {
   return [
@@ -25,8 +26,7 @@ function parseCommand(key: string): string[] {
   try {
     const cmds = JSON.parse(value);
     if (!Array.isArray(cmds)) {
-      core.setFailed(`'${key}' should be valid JSON array`);
-      return [];
+      panic(`'${key}' should be valid JSON array`);
     }
 
     return cmds as string[]
@@ -36,8 +36,7 @@ function parseCommand(key: string): string[] {
     }
   }
 
-  core.setFailed(`'${key}' should be a valid JSON array or a string separated by newline character`);
-  return [];
+  panic(`'${key}' should be a valid JSON array or a string separated by newline character`);
 }
 
 function getStrategy(): Strategy {

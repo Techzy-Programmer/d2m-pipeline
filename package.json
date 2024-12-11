@@ -5,7 +5,8 @@
   "scripts": {
     "tscheck": "tsc --noEmit",
     "pack": "ncc build --out lib",
-    "compile": "pnpm run tscheck && pnpm run pack"
+    "compile": "pnpm run tscheck && pnpm run pack",
+    "act": "act -P ubuntu-latest=node:20-slim --secret-file .secrets"
   },
   "keywords": [],
   "author": "",
