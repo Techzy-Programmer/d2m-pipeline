@@ -23,4 +23,9 @@ jobs:
           localUser: "risha"
           localParentPath: "Documents/d2m-test"
           strategy: "dist"
-          distStrategyFolder: "./src"
+          distStrategyFolder: "./lib"
+          preDeployCommands: "mkdir pre-deployment-tst"
+          postDeployCommands: |
+            ls -la
+            mkdir post-deployment-tst
+            mkdir post-deployment-tst-2

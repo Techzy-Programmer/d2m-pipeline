@@ -4,6 +4,8 @@ type RepoStrategy = {
 }
 
 type DistStrategy = {
+  folder_to_upload: string;
+  root_folder_name: string;
   file_name: string;
 }
 

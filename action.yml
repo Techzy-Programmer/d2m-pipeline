@@ -30,7 +30,11 @@ inputs:
   distStrategyFolder:
     description: 'Folder to deploy for dist strategy'
     required: false
-    default: '.'
+    default: 'dist'
+  distRemotetRootFolderName:
+    description: 'Remote folder name where your dist files will be deployed (defaults to basename of distStrategyFolder)'
+    required: false
+    default: ''
   localUser:
     description: 'Local user to run the whole deployment against'
     required: true

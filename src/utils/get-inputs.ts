@@ -22,7 +22,7 @@ export function getInputs(): [WFInput, CoreInput] {
 
 function parseCommand(key: string): string[] {
   const value = core.getInput(key)
-  
+
   try {
     const cmds = JSON.parse(value);
     if (!Array.isArray(cmds)) {
@@ -36,7 +36,7 @@ function parseCommand(key: string): string[] {
     }
   }
 
-  panic(`'${key}' should be a valid JSON array or a string separated by newline character`);
+  return [value];
 }
 
 function getStrategy(): Strategy {
@@ -59,6 +59,8 @@ function getStrategy(): Strategy {
       return {
         strategy_type,
         strategy: {
+          root_folder_name: core.getInput("distRemotetRootFolderName"),
+          folder_to_upload: core.getInput("distStrategyFolder"),
           file_name: '', // To be set after calling upload api
         },
       };

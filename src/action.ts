@@ -1,6 +1,8 @@
+import { WFInput } from './types';
 import { panic } from './utils/general';
 import { getInputs } from './utils/get-inputs';
 import { APIClient } from './utils/api-client';
+import { executeDistDeployment } from './strategy/dist-deploy';
 
 async function run() {
   try {
@@ -8,9 +10,9 @@ async function run() {
     const { key, host, port } = coreInput;
     
     APIClient.setConfig(key, `http://${host}:${port}/api`);
-    await testConnection();
 
-    console.log("Received inputs:", workflowInput, { key });
+    await testConnection();
+    await forwardRequest(workflowInput);
   } catch (error) {
     if (error instanceof Error) panic(error.message);
   }
@@ -33,5 +35,11 @@ async function testConnection() {
   } catch (error) {
     console.log(error);
     panic("Looks like d2m is not running on your prod machine");
+  }
+}
+
+async function forwardRequest(input: WFInput) {
+  switch (input.strategy_type) {
+    case "dist": return await executeDistDeployment(input);
   }
 }
